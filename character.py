@@ -16,6 +16,7 @@ font = pygame.font.Font(None, 36)
 small_font = pygame.font.Font(None, 24)
 
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, blocks):
         super().__init__()
