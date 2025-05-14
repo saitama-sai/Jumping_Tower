@@ -329,3 +329,46 @@ class Player(pygame.sprite.Sprite):
             surface.blit(ghost_img, (self.rect.x - offset, self.rect.y))
         else:
             surface.blit(flipped_image, self.rect)
+
+        #
+
+        info_font = pygame.font.Font(None, 22)
+
+        #
+        speed_text = info_font.render(f"Hız: {game_speed:.1f}x", True, WHITE)
+        surface.blit(speed_text, (10, 10))
+
+        #
+        score_text = info_font.render(f"Skor: {self.score}", True, WHITE)
+        surface.blit(score_text, (10, 25))
+
+        #
+        power_bar_width = 80
+        power_bar_height = 8
+        power_bar_x = 10
+        power_bar_y = 60
+        pygame.draw.rect(surface, RED, (power_bar_x, power_bar_y, power_bar_width, power_bar_height))
+        filled_width = int((self.power / self.max_power) * power_bar_width)
+        if self.power >= self.max_power * 0.9:
+            bar_color = (0, 255, 255)
+            if pygame.time.get_ticks() % 500 < 250:
+                bar_color = (255, 255, 0)
+        else:
+            bar_color = GREEN
+        pygame.draw.rect(surface, bar_color, (power_bar_x, power_bar_y, filled_width, power_bar_height))
+        pygame.draw.rect(surface, WHITE, (power_bar_x, power_bar_y, power_bar_width, power_bar_height), 1)
+
+        # Display power text right above the power bar
+        power_text = info_font.render(f"Power: {int(self.power)}/{self.max_power}", True, WHITE)
+        surface.blit(power_text, (power_bar_x, power_bar_y - 18))
+
+        # Only display combo if active
+        if self.flip_combo > 1:
+            combo_text = info_font.render(f"Combo: x{self.flip_combo:.1f}", True, YELLOW)
+            surface.blit(combo_text, (power_bar_x, power_bar_y + 15))
+
+        # Only display blocks jumped during flipping
+        if self.flipping or self.blocks_jumped > 0:
+            blocks_text = info_font.render(f"Bloklar: {self.blocks_jumped}", True, BLUE)
+            surface.blit(blocks_text, (power_bar_x, power_bar_y + 35))
+
