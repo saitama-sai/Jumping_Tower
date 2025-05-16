@@ -375,4 +375,240 @@ class Player(pygame.sprite.Sprite):
         if self.flipping or self.blocks_jumped > 0:
             blocks_text = info_font.render(f"Bloklar: {self.blocks_jumped}", True, BLUE)
             surface.blit(blocks_text, (power_bar_x, power_bar_y + 35))
-
+class Block(pygame.sprite.Sprite):
+    def __init__(self, x, y, width=150):
+        super().__init__()
+        try:
+            self.image = pygame.image.load("assets/block.png").convert_alpha()
+        except:
+            self.image = pygame.Surface((width, 30))
+            self.image.fill((0, 255, 0))
+        self.image = pygame.transform.scale(self.image, (width, 30))
+        self.rect = self.image.get_rect(midtop=(x, y))
+    def update(self, scroll, blocks):
+        self.rect.y += scroll
+        if self.rect.top > SCREEN_HEIGHT:
+            self._reset_position(blocks)
+    def _reset_position(self, blocks):
+        highest_block = None
+        highest_y = float('inf')
+        for block in blocks:
+            if block != self and block.rect.y < highest_y:
+                highest_y = block.rect.y
+                highest_block = block
+        if highest_block:
+            self.rect.y = highest_y - 130
+            if random.choice([True, False]):
+                x_shift = random.randint(50, 150)
+            else:
+                x_shift = random.randint(-150, -50)
+            new_x = highest_block.rect.centerx + x_shift
+            self.rect.centerx = max(self.rect.width // 2 + 20,
+                                    min(new_x, SCREEN_WIDTH - self.rect.width // 2 - 20))
+            new_width = random.randint(180, 250)
+            self.image = pygame.transform.scale(self.image, (new_width, 30))
+            self.rect.width = new_width
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+class GameManager:
+    def __init__(self):
+        self.high_score = self._load_high_score()
+        self.in_menu = True
+        self.in_help = False
+        self.game_active = False
+        self.blocks = []
+        self.player = None
+    def _load_high_score(self):
+        try:
+            with open("highscore.txt", "r") as file:
+                return int(file.read())
+        except:
+            return 0
+    def _save_high_score(self, score):
+        try:
+            with open("highscore.txt", "w") as file:
+                file.write(str(score))
+        except:
+            pass
+    def create_blocks(self):
+        blocks = []
+        ground_block = Block(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 30, SCREEN_WIDTH)
+        blocks.append(ground_block)
+        y = SCREEN_HEIGHT - 150
+        horizontal_variation = 150
+        vertical_gap = 130
+        prev_x = SCREEN_WIDTH // 2
+        for i in range(20):
+            width = random.randint(180, 250)
+            if i % 2 == 0:
+                x_shift = random.randint(50, horizontal_variation)
+            else:
+                x_shift = random.randint(-horizontal_variation, -50)
+            x = prev_x + x_shift
+            x = max(width // 2 + 20, min(x, SCREEN_WIDTH - width // 2 - 20))
+            block = Block(x, y, width)
+            blocks.append(block)
+            y -= vertical_gap
+            prev_x = x
+        return blocks
+    def draw_help_menu(self):
+        screen.blit(bg_image, (0, 0))
+        title_font = pygame.font.Font(None, 60)
+        title_text = title_font.render("OYNANIS", True, WHITE)
+        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 80))
+        screen.blit(title_text, title_rect)
+        instructions = [
+            "Tuşlar: Ok tuşları/SPACE ile zıpla",
+            "Power %90 dolunca F ile takla at!",
+            "Taklada duvarlardan sekerek COMBO yap!",
+            "Yükseldikçe ve blok atladıkça puan kazan",
+            "Daha hızlı zıpla, daha yükseğe çık",
+            "Düşmemeye çalış!"
+        ]
+        y_pos = 150
+        for instr in instructions:
+            instr_text = font.render(instr, True, WHITE)
+            instr_rect = instr_text.get_rect(center=(SCREEN_WIDTH // 2, y_pos))
+            screen.blit(instr_text, instr_rect)
+            y_pos += 40
+        back_text = font.render("ESC ile menüye dön", True, GREEN)
+        back_rect = back_text.get_rect(center=(SCREEN_WIDTH // 2, 500))
+        screen.blit(back_text, back_rect)
+        if pygame.time.get_ticks() % 1000 < 500:
+            pygame.draw.rect(screen, WHITE, back_rect.inflate(20, 10), 2)
+    def draw_menu(self):
+        screen.blit(bg_image, (0, 0))
+        title_font = pygame.font.Font(None, 72)
+        title_text = title_font.render("JUMPY TOWER", True, WHITE)
+        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 150))
+        screen.blit(title_text, title_rect)
+        try:
+            original_img = pygame.image.load("assets/high_scores.png").convert_alpha()
+            original_width = original_img.get_width()
+            original_height = original_img.get_height()
+            new_width = 200
+            new_height = int(original_height * (new_width / original_width))
+            high_scores_img = pygame.transform.scale(original_img, (new_width, new_height))
+            high_scores_rect = high_scores_img.get_rect(center=(SCREEN_WIDTH // 2, 250))
+            screen.blit(high_scores_img, high_scores_rect)
+            score_value = font.render(f"{self.high_score}", True, YELLOW)
+            score_rect = score_value.get_rect(center=(SCREEN_WIDTH // 2, high_scores_rect.bottom + 30))
+            screen.blit(score_value, score_rect)
+        except Exception as e:
+            print("High scores image couldn't be loaded:", e)
+            high_score_text = font.render(f"En Yüksek Skor: {self.high_score}", True, YELLOW)
+            high_score_rect = high_score_text.get_rect(center=(SCREEN_WIDTH // 2, 250))
+            screen.blit(high_score_text, high_score_rect)
+        start_text = font.render("ENTER ile başlat", True, GREEN)
+        start_rect = start_text.get_rect(center=(SCREEN_WIDTH // 2, 350))
+        screen.blit(start_text, start_rect)
+        help_text = font.render("H tuşu ile oynanış", True, WHITE)
+        help_rect = help_text.get_rect(center=(SCREEN_WIDTH // 2, 390))
+        screen.blit(help_text, help_rect)
+        if pygame.time.get_ticks() % 1000 < 500:
+            pygame.draw.rect(screen, WHITE, start_rect.inflate(20, 10), 2)
+    def handle_menu_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.in_menu = False
+                    self.game_active = True
+                elif event.key == pygame.K_h:
+                    self.in_menu = False
+                    self.in_help = True
+        return False
+    def handle_help_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.in_help = False
+                    self.in_menu = True
+        return False
+    def run_game(self):
+        global game_speed
+        self.blocks = self.create_blocks()
+        self.player = Player(self.blocks)
+        game_speed = 1.5
+        max_game_speed = 2.9
+        speed_increase_rate = 0.0003
+        clock = pygame.time.Clock()
+        run = True
+        scroll = 0
+        camera_min_offset = 150
+        camera_safe_zone = SCREEN_HEIGHT // 2
+        while run and self.game_active:
+            screen.blit(bg_image, (0, 0))
+            keys = pygame.key.get_pressed()
+            self.player.update(keys, self.blocks)
+            if self.player.start_scroll and game_speed < max_game_speed:
+                game_speed += speed_increase_rate
+            if self.player.start_scroll:
+                min_top_distance = camera_min_offset
+                player_screen_pos = self.player.rect.y - scroll
+                if self.player.flipping:
+                    target_camera_y = self.player.rect.y - camera_safe_zone + 100
+                    camera_speed = 0.2
+                else:
+                    if self.player.vel_y < 0:
+                        camera_offset = self.player.camera_offset
+                        camera_speed = self.player.camera_speed_up * 1.5
+                    else:
+                        camera_offset = min(self.player.camera_offset, 150)
+                        camera_speed = self.player.camera_speed_down * 1.2
+                    target_camera_y = self.player.rect.y - camera_safe_zone + camera_offset
+                self.player.camera_y += (target_camera_y - self.player.camera_y) * camera_speed
+                if self.player.flipping:
+                    scroll = 2.0 * game_speed
+                else:
+                    scroll = 1.5 * game_speed
+                if player_screen_pos < min_top_distance:
+                    immediate_correction = min_top_distance - player_screen_pos
+                    self.player.camera_y -= immediate_correction
+                camera_scroll = scroll
+            else:
+                scroll = 0
+                camera_scroll = 0
+            for block in self.blocks:
+                block.update(camera_scroll, self.blocks)
+                if block.rect.bottom >= 0 and block.rect.top <= SCREEN_HEIGHT:
+                    block.draw(screen)
+            self.player.draw(screen)
+            if self.player.score > self.high_score:
+                self.high_score = self.player.score
+                self._save_high_score(self.high_score)
+            if self.player.rect.top > SCREEN_HEIGHT + 100:
+                self.game_active = False
+                self.in_menu = True
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    return
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+                        self.game_active = False
+                        self.in_menu = True
+            pygame.display.update()
+            clock.tick(60)
+    def run(self):
+        quit_game = False
+        while not quit_game:
+            if self.in_menu:
+                self.draw_menu()
+                quit_game = self.handle_menu_events()
+            elif self.in_help:
+                self.draw_help_menu()
+                quit_game = self.handle_help_events()
+            elif self.game_active:
+                self.run_game()
+            pygame.display.update()
+if __name__ == "__main__":
+    game = GameManager()
+    game.run()
+    pygame.quit()
