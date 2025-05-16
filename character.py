@@ -361,17 +361,11 @@ class Player(pygame.sprite.Sprite):
             bar_color = GREEN
         pygame.draw.rect(surface, bar_color, (power_bar_x, power_bar_y, filled_width, power_bar_height))
         pygame.draw.rect(surface, WHITE, (power_bar_x, power_bar_y, power_bar_width, power_bar_height), 1)
-
-        # Display power text right above the power bar
         power_text = info_font.render(f"Power: {int(self.power)}/{self.max_power}", True, WHITE)
         surface.blit(power_text, (power_bar_x, power_bar_y - 18))
-
-        # Only display combo if active
         if self.flip_combo > 1:
             combo_text = info_font.render(f"Combo: x{self.flip_combo:.1f}", True, YELLOW)
             surface.blit(combo_text, (power_bar_x, power_bar_y + 15))
-
-        # Only display blocks jumped during flipping
         if self.flipping or self.blocks_jumped > 0:
             blocks_text = info_font.render(f"Bloklar: {self.blocks_jumped}", True, BLUE)
             surface.blit(blocks_text, (power_bar_x, power_bar_y + 35))
