@@ -117,3 +117,10 @@ Yüksek skorlar "highscore.txt" dosyasında saklanır
 Karakter ve platform görselleri "assets" klasöründen yüklenir
 
 Görsel dosyalarının eksikliği durumunda basit geometrik şekiller kullanılır
+
+## Uygulama Görünümü
+
+![Ana Ekran](images/oyunici.png)
+![Ana Ekran](images/oyunici1.png)
+![Ana Ekran](images/oyunici2.png)
+![Ana Ekran](images/oyunici3.png)
