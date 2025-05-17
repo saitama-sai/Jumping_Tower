@@ -121,6 +121,9 @@ Görsel dosyalarının eksikliği durumunda basit geometrik şekiller kullanıl�
 ## Uygulama Görünümü
 
 ![Ana Ekran](imagines/oyunici.png)
+
 ![Ana Ekran](imagines/oyunici1.png)
+
 ![Ana Ekran](imagines/oyunici2.png)
+
 ![Ana Ekran](imagines/oyunici3.png)
