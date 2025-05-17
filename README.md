@@ -120,6 +120,7 @@ Görsel dosyalarının eksikliği durumunda basit geometrik şekiller kullanıl�
 
 ## Oyun İçi Görünümü
 
+
 ![Ana Ekran](imagines/oyunici.png)
 
 ![Ana Ekran](imagines/oyunici1.png)
