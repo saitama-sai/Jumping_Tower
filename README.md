@@ -118,7 +118,7 @@ Karakter ve platform görselleri "assets" klasöründen yüklenir
 
 Görsel dosyalarının eksikliği durumunda basit geometrik şekiller kullanılır
 
-## Uygulama Görünümü
+## Oyun İçi Görünümü
 
 ![Ana Ekran](imagines/oyunici.png)
 
