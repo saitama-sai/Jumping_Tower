@@ -52,7 +52,7 @@ Oyun ilerledikçe hız kademeli olarak artar (1.5x başlangıç hızından 2.9x'
 Platformların rastgele yerleşimi ve boyutları oyunun her seferinde farklı hissedilmesini sağlar
 
 
-###### Görseller
+#### Görseller
 
 Karakter için çoklu animasyon kareleri:
 
@@ -73,7 +73,7 @@ Platform ve arka plan görselleri
 
 Takla ve combo efektleri
 
-###### Kullanıcı Arayüzü
+#### Kullanıcı Arayüzü
 
 Ana menü ekranı
 
@@ -93,7 +93,7 @@ Atlanan blok sayısı (takla sırasında)
 
 
 
-##### Teknik Detaylar
+#### Teknik Detaylar
 ###### Kod Yapısı
 
 GameManager Sınıfı: Oyun döngüsü, menü yönetimi ve yüksek skor kaydetme işlemlerini yönetir
