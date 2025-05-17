@@ -120,7 +120,7 @@ Görsel dosyalarının eksikliği durumunda basit geometrik şekiller kullanıl�
 
 ## Uygulama Görünümü
 
-![Ana Ekran](images/oyunici.png)
-![Ana Ekran](images/oyunici1.png)
-![Ana Ekran](images/oyunici2.png)
-![Ana Ekran](images/oyunici3.png)
+![Ana Ekran](imagines/oyunici.png)
+![Ana Ekran](imagines/oyunici1.png)
+![Ana Ekran](imagines/oyunici2.png)
+![Ana Ekran](imagines/oyunici3.png)
